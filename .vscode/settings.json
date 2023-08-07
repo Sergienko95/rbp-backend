@@ -3,6 +3,6 @@
     "python.analysis.autoSearchPaths": false,
     "python.analysis.extraPaths": [],
     "python.autoComplete.extraPaths": [],
-    "python.defaultInterpreterPath": ".venv/",
+    "python.defaultInterpreterPath": ".venv",
     "python.terminal.activateEnvironment": false
 }
