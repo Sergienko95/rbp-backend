@@ -10,3 +10,19 @@ tasks:
       - ".venv\\Scripts\\activate.bat"
       - pip install -r requirements.txt
     desc: разварачивает виртуальное окружение
+
+  run-server-dev:
+    cmds:
+      - uvicorn --reload app:app
+    desc: запускает сервер для разработки
+    interactive: true
+
+  run-tests:
+    cmds:
+      - pytest .
+    desc: запускает тесты
+
+  code-format:
+    cmds:
+      - black --exclude '.*venv.*' -l 79 .
+    desc: форматирует код
