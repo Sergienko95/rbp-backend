@@ -1,0 +1,15 @@
+name: Full
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - name: xxx
+        run: echo hello world
