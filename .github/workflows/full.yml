@@ -11,5 +11,21 @@ jobs:
   full:
     runs-on: ubuntu-latest
     steps:
-      - name: xxx
-        run: echo hello world
+      - name: клонирование репозитория
+        uses: actions/checkout@v3
+
+      - name: установить питон
+        uses: actions/setup-python@v4
+
+        # тут хорошо бы создать виртуальное окружение
+        # но т.к. "системный" питон тут каждый раз новый,
+        # мы будем херячить пакеты прямо в него
+
+      - name: установить питон пакеты
+        run: pip install -r requirements.txt
+    
+      - name: запустить сервер
+        run: uvicorn app:app &
+
+      - name: прогоним тесты
+        run: pytest
