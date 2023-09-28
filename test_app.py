@@ -2,6 +2,7 @@ import requests
 from devtools import debug
 from random import randint
 
+
 def test_root():
     response = requests.get("http://localhost:8000/")
     assert response.status_code == 200
@@ -21,8 +22,24 @@ def test_reviews():
     assert response.json() == []
 
     # Создаем отзыв
-    review = {'subject': 'Python', 'text': 'I love Python', 'mark': randint(0, 10)}
+    review = {
+        "subject": "Python",
+        "text": "I love Python",
+        "mark": randint(0, 10),
+    }
     response = requests.post("http://localhost:8000/reviews", json=review)
-    debug(response.headers)
     assert response.status_code == 201
     assert response.json() == review
+
+
+def test_invalid_create():
+    # Создаем отзыв
+    review = {
+        "subject": "Python",
+        "text": "I love Python",
+        "mark": randint(0, 10),
+        "x": 1,
+    }
+    response = requests.post("http://localhost:8000/reviews", json=review)
+    debug(response.text)
+    assert response.status_code == 422

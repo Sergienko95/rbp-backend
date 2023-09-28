@@ -11,6 +11,7 @@ app = fastapi.FastAPI()
     4.   Сделать запрос на сервак и удалить отзыв один.
 """
 
+
 # Сделать get запрос на /reviews
 @app.get("/reviews")
 async def handle_get_all_reviews():
@@ -18,10 +19,19 @@ async def handle_get_all_reviews():
     return reviews
 
 
+from pydantic import BaseModel, Field
+
+
+class Review(BaseModel):
+    subject: str
+    text: str
+    mark: int = Field(le=10, ge=0)
+
+
 # Сделать post запрос на /reviews
 @app.post("/reviews", status_code=201)
-async def handle_create_review(review: dict=fastapi.Body(), user_agent: str=fastapi.Header('user-agent')):
-    debug (review, user_agent)
+async def handle_create_review(review: Review = fastapi.Body()):
+    debug(review)
     return review
 
 
