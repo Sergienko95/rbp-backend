@@ -1,6 +1,7 @@
 import requests
 from devtools import debug
 from random import randint
+import pytest
 
 
 def test_root():
@@ -16,6 +17,7 @@ def test_languages():
 
 
 def test_reviews():
+    
     # Проверяю, что сначала отзывов нет
     response = requests.get("http://localhost:8000/reviews")
     assert response.status_code == 200
@@ -30,6 +32,18 @@ def test_reviews():
     response = requests.post("http://localhost:8000/reviews", json=review)
     assert response.status_code == 201
     assert response.json() == review
+
+     # Проверяю, созданный отзыв сохранился на сервере
+    response = requests.get("http://localhost:8000/reviews")
+    assert response.status_code == 200
+    assert response.json() == [review]
+
+    # Удаляю все отзывы 
+    response = requests.delete("http://localhost:8000/reviews")
+    assert response.status_code == 204
+    response = requests.get("http://localhost:8000/reviews")
+    assert response.status_code == 200
+    assert response.json() == []
 
 
 def test_invalid_create():

@@ -15,23 +15,41 @@ app = fastapi.FastAPI()
 # Сделать get запрос на /reviews
 @app.get("/reviews")
 async def handle_get_all_reviews():
-    reviews = []
+    reviews = await get_saved_reviews()
     return reviews
 
+REVIEWS = []
+async def get_saved_reviews():
+    return REVIEWS
 
-from pydantic import BaseModel, Field
+async def save_review(review: 'Review'):
+    REVIEWS.append(review)
+
+
+async def delete_all_reviews():
+    REVIEWS.clear()
+
+@app.delete("/reviews", status_code=204)
+async def handle_delete_all_reviews():
+    await delete_all_reviews()
+
+
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Review(BaseModel):
     subject: str
     text: str
     mark: int = Field(le=10, ge=0)
+    model_config = ConfigDict(extra='forbid')
 
 
 # Сделать post запрос на /reviews
 @app.post("/reviews", status_code=201)
 async def handle_create_review(review: Review = fastapi.Body()):
     debug(review)
+    await save_review(review)
     return review
 
 
