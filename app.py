@@ -1,7 +1,7 @@
 import fastapi
 from devtools import debug
 
-from function import Review, get_saved_reviews, delete_all_reviews, save_review
+from db import Review, get_saved_reviews, delete_all_reviews, save_review
 
 app = fastapi.FastAPI()
 
