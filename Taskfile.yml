@@ -18,11 +18,15 @@ tasks:
     interactive: true
 
   run-tests:
+    aliases: 
+      - t
     cmds:
       - pytest .
     desc: запускает тесты
 
   code-format:
+    aliases: 
+      - f
     cmds:
       - black --exclude '.*venv.*' -l 79 .
     desc: форматирует код
