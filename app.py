@@ -14,7 +14,6 @@ app = fastapi.FastAPI()
 """
 
 
-# Сделать get запрос на /reviews
 @app.get("/reviews")
 async def handle_get_all_reviews():
     reviews = await get_saved_reviews()
@@ -26,9 +25,38 @@ async def handle_delete_all_reviews():
     await delete_all_reviews()
 
 
-# Сделать post запрос на /reviews
 @app.post("/reviews", status_code=201)
 async def handle_create_review(review: Review = fastapi.Body()):
     debug(review)
+    await save_review(review)
+    return review
+
+
+@app.get("/reviews/{review_id}")
+async def handle_get_all_reviews(*, review_id: int=fastapi.Path()):  # TODO: переименовать функцию
+    debug(review_id)
+    # TODO: что будет, если сохраненных отзывов не будет -> 404
+    # TODO: что будет, если review_id будут разные 
+    # TODO: что будет, если придет запрос на review_id, которого нет (что будет с серваком) -> 404
+    reviews = await get_saved_reviews()
+    review = reviews[0]
+    return review
+
+
+@app.delete("/reviews/{review_id}", status_code=204)
+async def handle_delete_all_reviews(*, review_id: int=fastapi.Path()):  # TODO: переименовать функцию
+    debug(review_id)
+    # TODO: что будет, если сохраненных отзывов не будет -> 404
+    # TODO: что будет, если review_id будут разные 
+    # TODO: что будет, если придет запрос на review_id, которого нет (что будет с серваком) -> 404
+    await delete_all_reviews()
+
+
+@app.put("/reviews/{review_id}")
+async def handle_create_review(*, review: Review = fastapi.Body(), review_id: int=fastapi.Path()):  # TODO: переименовать функцию
+    debug(review, review_id)
+    # TODO: что будет, если сохраненных отзывов не будет -> 404
+    # TODO: что будет, если review_id будут разные 
+    # TODO: что будет, если придет запрос на review_id, которого нет (что будет с серваком) -> 404
     await save_review(review)
     return review
