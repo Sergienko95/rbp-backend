@@ -3,6 +3,8 @@ from devtools import debug
 
 from db import Review, get_saved_reviews, delete_all_reviews, save_review
 
+from fastapi.responses import JSONResponse
+
 app = fastapi.FastAPI()
 
 """ 
@@ -39,7 +41,11 @@ async def handle_get_all_reviews(*, review_id: int=fastapi.Path()):  # TODO: п�
     # TODO: что будет, если review_id будут разные 
     # TODO: что будет, если придет запрос на review_id, которого нет (что будет с серваком) -> 404
     reviews = await get_saved_reviews()
-    review = reviews[0]
+    for review in reviews:
+        if review.id == review_id:
+            break
+    else:
+        return JSONResponse(status_code=404, content={"message": f"review with id={review_id} not found"})
     return review
 
 
