@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <title>РБП-Инфо</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <style>
+            :root {
+                --bs-body-bg: rgb(3, 18, 51);
+                --bs-body-color: rgb(238, 152, 248);
+            }
+            .table {
+                --bs-table-color-state: rgb(246, 77, 255);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1>РБП-Инфо</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <label for="id-name">Субъект:</label>
+                </div>
+                <div class="col">
+                    <input class="form-control" id="id-subject" type="text" value="Паша">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <label for="id-text">Текст:</label>
+                </div>
+                <div class="col">
+                    <input class="form-control" id="id-text" type="text" value="потому что Паша">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <label for="id-mark">Оценка:</label>
+                </div>
+                <div class="col">
+                    <input class="form-control" id="id-mark" type="text" value="2">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-danger" id="id-button-create" type="button">Отправить</button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col" id="id-reviews">
+                </div>
+            </div>
+        </div>
+
+    <script>
+        async function apiCreateReview(reviewData) {
+            const response = await fetch(
+                "http://localhost:8000/reviews", {
+                    body: JSON.stringify(reviewData),
+                    headers: {"Content-Type": "application/json"},
+                    method: "POST",
+                }
+            );
+            const review = await response.json();
+            console.log(`review created: ${JSON.stringify(review)}`);
+
+            return review;
+        }
+
+        async function apiGetAllReviews() {
+            const response = await fetch(
+                "http://localhost:8000/reviews", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            const reviews = await response.json();
+            return reviews;
+        }
+
+        function getNewReviewData() {
+            const subject = document.getElementById("id-subject").value;
+            const text = document.getElementById("id-text").value;
+            const markStr = document.getElementById("id-mark").value;
+            const mark = Number.parseInt(markStr);
+            
+            return {
+                subject: subject,
+                text: text,
+                mark: mark,
+            };
+        }
+
+        async function doCreateReview() {
+            const reviewData = getNewReviewData();
+            const review = await apiCreateReview(reviewData);
+            await doPopulateReviews();
+        }
+
+        function populateReviewsTable(reviews) {
+            const newTable = document.createElement("table");
+            newTable.hidden = true;
+            newTable.classList.add("table", "table-hoverable");
+
+            const thead = document.createElement("thead");
+            newTable.appendChild(thead);
+
+            let tr = document.createElement("tr");
+            thead.appendChild(tr);
+            ["#", "Субъект", "Текст", "Оценка"].forEach(element => {
+                let th = document.createElement("th");
+                th.setAttribute("scope", "col");
+                th.innerText = element;
+                tr.appendChild(th);
+            });
+
+            const tbody = document.createElement("tbody");
+            newTable.appendChild(tbody);
+            reviews.forEach((element, index) => {
+                let tdN = document.createElement("td");
+                tdN.classList.add("row");
+                tdN.textContent = index;
+
+                let tdSubject = document.createElement("td");
+                tdSubject.textContent = element.subject;
+
+                let tdText = document.createElement("td");
+                tdText.textContent = element.text;
+
+                let tdMark = document.createElement("td");
+                tdMark.textContent = element.mark;
+
+                let tr = document.createElement("tr");
+                [tdN, tdSubject, tdText, tdMark].forEach((element) => {
+                    tr.appendChild(element);
+                });
+                tbody.appendChild(tr);
+            });
+
+            const ct = document.getElementById("id-reviews");
+            const tables = [];
+            for (let tb of ct.getElementsByTagName("table")) {
+                tables.push(tb);
+            }
+
+            tables.forEach(tb => {
+                tb.hidden = true;
+            });
+            
+            ct.appendChild(newTable);
+
+            newTable.hidden = false;
+            
+            tables.forEach(tb => {
+                tb.remove();
+            });
+        }
+
+        async function doPopulateReviews() {
+            reviews = await apiGetAllReviews();
+            populateReviewsTable(reviews);
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await doPopulateReviews();
+            
+            const btnCreateNewReview = document.getElementById("id-button-create");
+            btnCreateNewReview.addEventListener("click", doCreateReview);
+        });
+    </script>
+    </body>
+</html>
