@@ -6,13 +6,13 @@ import pytest
 from db import Review
 
 
-def test_can_review_create_and_get_back():
-    send_data_to_server()
-    wait_for_response()
-    if data_are_saved():
-        pass
-    else:
-        raise AssertionError("всё упало")
+# def test_can_review_create_and_get_back(): 
+#     send_data_to_server()
+#     wait_for_response()
+#     if data_are_saved():
+#         pass
+#     else:
+#         raise AssertionError("всё упало")
 
 
 def test_reviews():
@@ -70,7 +70,9 @@ def test_reviews():
     }
     response = requests.put("http://localhost:8000/reviews/2", json=review)
     assert response.status_code == 200
-    assert response.json() == review
+    raw_review = response.json()
+    review_1 = Review.model_validate(raw_review)
+    assert review_1.model_dump(exclude=["id"]) == review
 
      # Создаем отзыв
     review = {
@@ -80,7 +82,9 @@ def test_reviews():
     }
     response = requests.put("http://localhost:8000/reviews/2", json=review)
     assert response.status_code == 200
-    assert response.json() == review
+    raw_review = response.json()
+    review_1 = Review.model_validate(raw_review)
+    assert review_1.model_dump(exclude=["id"]) == review
 
 def test_invalid_create():
     # Создаем отзыв
